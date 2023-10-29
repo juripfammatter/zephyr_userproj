@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [],
+      "cwd": "/Users/juri/git/zephyr_userproj/threading/src",
+      "program": "/Users/juri/git/zephyr_userproj/threading/src/build/Debug/outDebug"
+    }
+  ]
+}
