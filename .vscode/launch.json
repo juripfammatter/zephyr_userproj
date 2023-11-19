@@ -6,8 +6,8 @@
       "type": "lldb",
       "request": "launch",
       "args": [],
-      "cwd": "/Users/juri/git/zephyr_userproj/gpio/src",
-      "program": "/Users/juri/git/zephyr_userproj/gpio/src/build/Debug/outDebug"
+      "cwd": "/Users/juri/git/zephyr_userproj/debugging/src",
+      "program": "/Users/juri/git/zephyr_userproj/debugging/src/build/Debug/outDebug"
     }
   ]
 }
