@@ -1,12 +1,13 @@
 {
     "configurations": [
         {
-            "name": "macos-clang-arm64",
+            // "name": "macos-clang-arm64",
             "includePath": [
                 "${workspaceFolder}/**",
                 "/Users/juri/git/zephyr/zephyr*",
                 "/Users/juri/git/zephyr/zephyr/include",
                 "/Users/juri/git/zephyr/zephyr/build/zephyr/include/generated"
+                // "/Users/juri/zephyr-sdk-0.16.3/xtensa-espressif_esp32s2_zephyr-elf/xtensa-espressif_esp32s2_zephyr-elf/include/c++/12.2.0/*"
             ],
             "compilerPath": "/usr/bin/clang",
             "cStandard": "${default}",
