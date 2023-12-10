@@ -6,9 +6,13 @@
 
 int main(void)
 {
-    std::vector<int> vec(3,0);
+    std::vector<int> vec = {0, 1, 2};
     vec.push_back(42);
 
+    for(auto e: vec){
+        printk("%i\n", e);
+    }
+ 
 	printf("Hello World! %s\n", CONFIG_BOARD);
     int i = 0.0;
     while(true){
