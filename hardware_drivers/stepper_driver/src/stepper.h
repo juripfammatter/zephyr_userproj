@@ -73,7 +73,7 @@ public:
 
     double get_position(void)
     {
-        return phi_steps * step_size;
+        return phi_steps;
     }
 
 private:
@@ -110,6 +110,9 @@ private:
                 k_sleep(K_USEC(period / 2));
                 gpio_pin_set_dt(&step, 0);
                 k_sleep(K_USEC(period / 2));
+
+                // increment position
+                phi_steps++;
             }
             else
             {

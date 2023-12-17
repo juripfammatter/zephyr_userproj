@@ -8,8 +8,11 @@ int main(void)
 
 	stepper.set_velocity(20000.0);
 	k_sleep(K_MSEC(1000));
+	printk("Steps: %f\n", stepper.get_position());
+
 	stepper.set_velocity(-20000.0);
 	k_sleep(K_MSEC(1000));
+	printk("Steps: %f\n", stepper.get_position());
 
 	stepper.disable_stepper();
 	// while(1);
