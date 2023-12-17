@@ -10,13 +10,13 @@
 
 / {
 	aliases {
-		pwm-0 = &ledc0;
-		pwm-led0 = &stepper_pwm;
+		//pwm-0 = &ledc0;
+		//pwm-led0 = &stepper_pwm;
 		en-dir = &stepper0;
 		//direction = &stepper1;
 	};
 
-	// 
+	/*
 	pwmleds {
 		compatible = "pwm-leds";
 		stepper_pwm: pwm_led_gpio0_2 {
@@ -24,12 +24,14 @@
 			pwms = <&ledc0 0 1000 PWM_POLARITY_NORMAL>;
 		};
 	};
+	*/
 
 	stepper0 {
 		compatible = "gpio-leds";
 		stepper0: stepper_0 {
 			gpios = <&gpio0 4 GPIO_ACTIVE_LOW>,
-					<&gpio0 5 GPIO_ACTIVE_LOW>;
+					<&gpio0 5 GPIO_ACTIVE_LOW>,
+					<&gpio0 2 GPIO_ACTIVE_LOW>;
 		};
 	};
 
@@ -44,6 +46,7 @@
 };
 
 // Add LED to pinctrl
+/*
 &pinctrl {
 	ledc0_default: ledc0_default {
 		group1 {
@@ -52,7 +55,9 @@
 		};
 	};
 };
+*/
 
+/*
 // configure LED channel 0
 &ledc0 {
 	pinctrl-0 = <&ledc0_default>;
@@ -65,3 +70,4 @@
 		timer = <0>;
 	};
 };
+*/
