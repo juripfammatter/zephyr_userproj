@@ -117,7 +117,7 @@ private:
             else
             {
                 gpio_pin_set_dt(&step, 0);
-                k_sleep(K_MSEC(10));
+                k_sleep(K_USEC(100));
             }
         }
     }
