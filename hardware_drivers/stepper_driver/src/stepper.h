@@ -2,7 +2,7 @@
 #include <zephyr/sys/printk.h>
 #include <zephyr/device.h>
 #include <zephyr/drivers/gpio.h>
-#include <cstdlib>
+#include <math.h>
 
 #define STEPPER_STACK_SIZE 512
 #define STEPPER_THREAD_PRIORITY -5 // FIFO thread
@@ -21,18 +21,20 @@ static struct gpio_dt_spec step = GPIO_DT_SPEC_GET_BY_IDX(EN_DIR_NODE, gpios, 2)
 
 class Stepper
 {
-    double phi_steps; // angle °
+    double phi_steps; // angle in steps
 
     double step_size; // °/step
     double step_divider;
 
-    double current_speed; // °/s
-    double max_speed;     // °/s
+    double current_speed; // steps/s
+    double max_speed;     // steps/s
 
 public:
-    Stepper(double step_divider) : step_size(360.0 / (200.0 * step_divider)),
+    Stepper(double step_divider) : phi_steps(0),
+                                   step_size(360.0 / (200.0 * step_divider)),
                                    step_divider(step_divider),
                                    current_speed(0)
+
     {
         /* GPIO configuration */
         gpio_configure(enable, GPIO_OUTPUT);
@@ -51,7 +53,7 @@ public:
                                                      this, NULL, NULL,
                                                      STEPPER_THREAD_PRIORITY, 0, K_SECONDS(1));
 
-        printk("Initialized stepper with step size %.3f°\n", step_size);
+        printk("Initialized stepper with step size %.3f° and step divider %0.3f\n", step_size, step_divider);
         printk("Stepper thread running\n");
     };
 
@@ -68,17 +70,20 @@ public:
     // set velocity in °/s
     void set_velocity(double vel)
     {
-        this->current_speed = vel;
+        this->current_speed = vel * step_divider;
     }
 
     double get_position(void)
     {
-        return phi_steps;
+        return phi_steps / step_divider;
     }
 
 private:
     /* Threading */
     struct k_thread stepper_thread;
+
+    /* Timer */
+    struct k_timer step_timer;
 
     /* Stepper thread entry */
     static void stepper_thread_entry(void *instance, void *, void *)
@@ -102,14 +107,20 @@ private:
                 {
                     gpio_pin_set_dt(&direction, 0);
                 }
-                // calculate period in usec
-                int period = step_size * 1000000 / abs(current_speed);
 
+                // calculate period in usec
+                int period = 1000000.0 / fabs(current_speed);
+                period -= (int)(1277 / step_divider); // correct for time of gpio setting
+                // printk("current speed: %0.3f, period: %d\n", current_speed, period);
                 // set speed
+                // uint32_t start_time = k_uptime_get();
+
                 gpio_pin_set_dt(&step, 1);
                 k_sleep(K_USEC(period / 2));
+
                 gpio_pin_set_dt(&step, 0);
                 k_sleep(K_USEC(period / 2));
+                // printk("Time_elapsed: %d\n", (int)(k_uptime_get() - start_time));
 
                 // increment position
                 phi_steps++;
@@ -117,7 +128,7 @@ private:
             else
             {
                 gpio_pin_set_dt(&step, 0);
-                k_sleep(K_USEC(100));
+                k_sleep(K_USEC(10));
             }
         }
     }
