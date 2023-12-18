@@ -3,19 +3,17 @@
 int main(void)
 {
 	Stepper stepper(4); // using step divider 1/4
-	k_sleep(K_SECONDS(2));
+	k_sleep(K_MSEC(20));
 	stepper.enable_stepper();
 
-	stepper.set_velocity(200.0);
-	k_sleep(K_MSEC(1000));
+	stepper.set_velocity(600.0); // 3 rotations per second
+	k_sleep(K_MSEC(333));		 // one full rotation
 	printk("Steps: %f\n", stepper.get_position());
 
-	stepper.set_velocity(-200.0);
-	k_sleep(K_MSEC(1000));
+	stepper.set_velocity(-600.0); // -3 rotations per second
+	k_sleep(K_MSEC(333));		  // one full rotation
 	printk("Steps: %f\n", stepper.get_position());
 
-	stepper.disable_stepper();
-	// while(1);
-
+	// deconstructor will disable Stepper
 	return 0;
 }
