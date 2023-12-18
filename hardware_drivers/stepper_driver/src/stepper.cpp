@@ -1,18 +1,14 @@
 #include "stepper.h"
 
-#define STEPPER_STACK_SIZE 512
-#define STEPPER_THREAD_PRIORITY -5 // FIFO thread
-
 /* Threading */
 K_THREAD_STACK_DEFINE(stepper_thread_stack_area, STEPPER_STACK_SIZE);
 
 /* GPIOs */
-#define EN_DIR_NODE DT_ALIAS(en_dir)
-
 static struct gpio_dt_spec enable = GPIO_DT_SPEC_GET_BY_IDX(EN_DIR_NODE, gpios, 0);
 static struct gpio_dt_spec direction = GPIO_DT_SPEC_GET_BY_IDX(EN_DIR_NODE, gpios, 1);
 static struct gpio_dt_spec step = GPIO_DT_SPEC_GET_BY_IDX(EN_DIR_NODE, gpios, 2);
 
+// public:
 Stepper::Stepper(double step_divider) : phi_steps(0),
                                         step_size(360.0 / (200.0 * step_divider)),
                                         step_divider(step_divider),
@@ -65,6 +61,7 @@ double Stepper::get_position(void)
     return phi_steps / step_divider;
 }
 
+// private:
 void Stepper::stepper_thread_entry(void *instance, void *, void *)
 {
     auto stepper_thead_instance = reinterpret_cast<Stepper *>(instance);

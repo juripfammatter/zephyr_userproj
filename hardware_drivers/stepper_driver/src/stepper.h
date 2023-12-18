@@ -8,6 +8,8 @@
 #define STEPPER_STACK_SIZE 512
 #define STEPPER_THREAD_PRIORITY -5 // FIFO thread
 
+#define EN_DIR_NODE DT_ALIAS(en_dir)
+
 /* Stepper class */
 class Stepper
 {
