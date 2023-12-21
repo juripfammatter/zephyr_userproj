@@ -1,0 +1,8 @@
+tests:
+  # section.subsection
+  sample.testing.ztest:
+    build_only: true
+    platform_allow: qemu_xtensa
+    integration_platforms:
+      - qemu_xtensa
+    tags: test_framework
