@@ -46,14 +46,11 @@ private:
     /* Threading */
     struct k_thread stepper_thread;
 
-    /* Timer */
-    struct k_timer step_timer;
-
     /* Stepper thread entry */
     static void stepper_thread_entry(void *, void *, void *);
 
     /* Stepper thread function */
-    void stepper_thread_function(void);
+    void stepper_thread_function(double& desired_speed);
 
     /* GPIO configuration */
     void gpio_configure(const struct gpio_dt_spec gpio_spec, gpio_flags_t gpio_flag);

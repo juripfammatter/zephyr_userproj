@@ -65,16 +65,16 @@ double Stepper::get_position(void)
 void Stepper::stepper_thread_entry(void *instance, void *, void *)
 {
     auto stepper_thead_instance = reinterpret_cast<Stepper *>(instance);
-    stepper_thead_instance->stepper_thread_function();
+    stepper_thead_instance->stepper_thread_function(stepper_thead_instance->current_speed);
 }
 
-void Stepper::stepper_thread_function(void)
+void Stepper::stepper_thread_function(double& desired_speed)
 {
     while (1)
     {
-        if (current_speed != 0)
+        if (desired_speed != 0)
         {
-            if (current_speed < 0)
+            if (desired_speed < 0)
             {
                 gpio_pin_set_dt(&direction, 1);
             }
@@ -84,7 +84,7 @@ void Stepper::stepper_thread_function(void)
             }
 
             // calculate period in usec
-            int period = 1000000.0 / fabs(current_speed);
+            int period = 1000000.0 / fabs(desired_speed);
             period -= (int)(1277 / step_divider); // correct for time of gpio setting
 
             // set speed
