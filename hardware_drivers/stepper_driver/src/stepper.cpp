@@ -11,7 +11,6 @@ static struct gpio_dt_spec step = GPIO_DT_SPEC_GET_BY_IDX(EN_DIR_NODE, gpios, 2)
 /* Logging*/
 LOG_MODULE_REGISTER(logger);
 
-
 // public:
 Stepper::Stepper(double step_divider) : phi_steps(0),
                                         step_size(360.0 / (200.0 * step_divider)),
@@ -58,7 +57,7 @@ void Stepper::disable_stepper(void)
 
 void Stepper::set_velocity(double vel)
 {
-    this->current_speed = vel * step_divider;
+    current_speed = vel * step_divider;
 
     LOG_MODULE_DECLARE(logger);
     LOG_INF("Setting speed to %.3f (divider = %.1f)\n", current_speed, step_divider);
@@ -73,13 +72,15 @@ double Stepper::get_position(void)
 void Stepper::stepper_thread_entry(void *instance, void *, void *)
 {
     auto stepper_thead_instance = reinterpret_cast<Stepper *>(instance);
-    stepper_thead_instance->stepper_thread_function(stepper_thead_instance->current_speed);
+    stepper_thead_instance->stepper_thread_function();
 }
 
-void Stepper::stepper_thread_function(double& desired_speed)
+void Stepper::stepper_thread_function(void)
 {
     while (1)
     {
+        double desired_speed = current_speed;
+
         if (desired_speed != 0)
         {
             if (desired_speed < 0)
@@ -103,7 +104,7 @@ void Stepper::stepper_thread_function(double& desired_speed)
             k_sleep(K_USEC(period / 2));
 
             // increment/ decrement position
-            (desired_speed > 0)? phi_steps++ : phi_steps--;
+            (desired_speed > 0) ? phi_steps++ : phi_steps--;
         }
         else
         {

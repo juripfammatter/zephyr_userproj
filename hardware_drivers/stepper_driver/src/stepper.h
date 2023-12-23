@@ -51,7 +51,7 @@ private:
     static void stepper_thread_entry(void *, void *, void *);
 
     /* Stepper thread function */
-    void stepper_thread_function(double& desired_speed);
+    void stepper_thread_function(void);
 
     /* GPIO configuration */
     void gpio_configure(const struct gpio_dt_spec gpio_spec, gpio_flags_t gpio_flag);
