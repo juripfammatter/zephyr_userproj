@@ -8,11 +8,15 @@ static struct gpio_dt_spec enable = GPIO_DT_SPEC_GET_BY_IDX(EN_DIR_NODE, gpios, 
 static struct gpio_dt_spec direction = GPIO_DT_SPEC_GET_BY_IDX(EN_DIR_NODE, gpios, 1);
 static struct gpio_dt_spec step = GPIO_DT_SPEC_GET_BY_IDX(EN_DIR_NODE, gpios, 2);
 
+/* Logging*/
+LOG_MODULE_REGISTER(logger);
+
 // public:
 Stepper::Stepper(double step_divider) : phi_steps(0),
                                         step_size(360.0 / (200.0 * step_divider)),
                                         step_divider(step_divider),
-                                        current_speed(0)
+                                        current_speed(0),
+                                        stepper_enabled(false)
 
 {
     // GPIO configuration
@@ -32,8 +36,9 @@ Stepper::Stepper(double step_divider) : phi_steps(0),
                                                  this, NULL, NULL,
                                                  STEPPER_THREAD_PRIORITY, 0, K_MSEC(10));
 
-    printk("Initialized stepper with step size %.3f° and step divider %0.3f\n", step_size, step_divider);
-    printk("Stepper thread running\n");
+    LOG_MODULE_DECLARE(logger);
+    LOG_INF("Initialized stepper with step size %.3f° and step divider %0.1f\n", step_size, step_divider);
+    LOG_INF("Stepper thread running\n");
 }
 
 Stepper::~Stepper(void)
@@ -44,16 +49,21 @@ Stepper::~Stepper(void)
 void Stepper::enable_stepper(void)
 {
     gpio_pin_set_dt(&enable, 1);
+    stepper_enabled = true;
 }
 
 void Stepper::disable_stepper(void)
 {
     gpio_pin_set_dt(&enable, 0);
+    stepper_enabled = false;
 }
 
 void Stepper::set_velocity(double vel)
 {
-    this->current_speed = vel * step_divider;
+    current_speed = vel * step_divider;
+
+    LOG_MODULE_DECLARE(logger);
+    LOG_INF("Setting speed to %.3f (divider = %.1f)\n", current_speed, step_divider);
 }
 
 double Stepper::get_position(void)
@@ -72,9 +82,11 @@ void Stepper::stepper_thread_function(void)
 {
     while (1)
     {
-        if (current_speed != 0)
+        double desired_speed = current_speed;
+
+        if (desired_speed != 0 && stepper_enabled)
         {
-            if (current_speed < 0)
+            if (desired_speed < 0)
             {
                 gpio_pin_set_dt(&direction, 1);
             }
@@ -84,7 +96,7 @@ void Stepper::stepper_thread_function(void)
             }
 
             // calculate period in usec
-            int period = 1000000.0 / fabs(current_speed);
+            int period = 1000000.0 / fabs(desired_speed);
             period -= (int)(1277 / step_divider); // correct for time of gpio setting
 
             // set speed
@@ -94,8 +106,8 @@ void Stepper::stepper_thread_function(void)
             gpio_pin_set_dt(&step, 0);
             k_sleep(K_USEC(period / 2));
 
-            // increment position
-            phi_steps++;
+            // increment/ decrement position
+            (desired_speed > 0) ? phi_steps++ : phi_steps--;
         }
         else
         {
@@ -107,20 +119,21 @@ void Stepper::stepper_thread_function(void)
 
 void Stepper::gpio_configure(const struct gpio_dt_spec gpio_spec, gpio_flags_t gpio_flag)
 {
+    LOG_MODULE_DECLARE(test);
     if (!device_is_ready(gpio_spec.port))
     {
-        printk("Error: button device %s is not ready\n", gpio_spec.port->name);
+        LOG_ERR("Error: button device %s is not ready\n", gpio_spec.port->name);
     }
     else
     {
         int ret = gpio_pin_configure_dt(&gpio_spec, gpio_flag);
         if (ret != 0)
         {
-            printk("Error %d: failed to configure %s pin %d to %d\n", ret, gpio_spec.port->name, gpio_spec.pin, gpio_spec.dt_flags);
+            LOG_ERR("Error %d: failed to configure %s pin %d to %d\n", ret, gpio_spec.port->name, gpio_spec.pin, gpio_spec.dt_flags);
         }
         else
         {
-            printk("Configured %s pin %d to %d\n", gpio_spec.port->name, gpio_spec.pin, gpio_spec.dt_flags);
+            LOG_INF("Configured %s pin %d to %d\n", gpio_spec.port->name, gpio_spec.pin, gpio_spec.dt_flags);
         }
     }
 }
