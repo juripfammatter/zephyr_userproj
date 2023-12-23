@@ -11,6 +11,10 @@ Stepper stepper(4);
 LOG_MODULE_REGISTER(unit_test_logger);
 
 /* Order is random */
+
+/*!
+ * @brief Test for enable / disable and successful object creation
+ */
 ZTEST(stepper_unit_tests, enable_disable_test)
 {
 	stepper.enable_stepper();
@@ -19,6 +23,9 @@ ZTEST(stepper_unit_tests, enable_disable_test)
 	ztest_test_pass();
 }
 
+/*!
+ * @brief Test if steps are generated even though stepper is not enabled
+ */
 ZTEST(stepper_unit_tests, disabled_steps_test)
 {
 	stepper.disable_stepper();
@@ -29,11 +36,14 @@ ZTEST(stepper_unit_tests, disabled_steps_test)
 
 	stepper.set_velocity(0.0);
 	k_sleep(K_MSEC(100));
-	
+
 	zassert_true(stepper.get_position() < 0.5,
 				 "\nSteps were generated while stepper was disabled");
 }
 
+/*!
+ * @brief Test stepper positioning at various speeds (5% error tolerance)
+ */
 ZTEST(stepper_unit_tests, various_speed_test)
 {
 	stepper.enable_stepper();

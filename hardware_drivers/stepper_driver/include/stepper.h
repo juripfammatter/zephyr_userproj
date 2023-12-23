@@ -16,22 +16,41 @@ class Stepper
 {
 
 public:
-    /* Constructor */
+    /*!
+     * @brief Constructor
+     * @param step_divider (possible values [2, 4, 8, 16])
+     */
     explicit Stepper(double step_divider);
 
-    /* Deconstructor */
+    /*!
+     * @brief Deconstructor
+     * @param none
+     */
     virtual ~Stepper(void);
 
-    /* Enable stepper */
+    /*!
+     * @brief Enable stepper
+     * @param none
+     */
     void enable_stepper(void);
 
-    /* Disable stepper*/
+    /*!
+     * @brief Disable stepper
+     * @param none
+     */
     void disable_stepper(void);
 
-    /* set velocity in steps/s */
+    /*!
+     * @brief Set velocity
+     * @param vel in steps/s
+     */
     void set_velocity(double vel);
-    
-    /* get angle in steps */
+
+    /*!
+     * @brief  measure postion of stepper
+     * @param  none
+     * @return position in steps
+     */
     double get_position(void);
 
 private:
@@ -49,12 +68,24 @@ private:
     /* Threading */
     struct k_thread stepper_thread;
 
-    /* Stepper thread entry */
+    /*!
+     * @brief Stepper thread entry (C/C++ trampoline)
+     * @param stepper object
+     * @param
+     * @param
+     */
     static void stepper_thread_entry(void *, void *, void *);
 
-    /* Stepper thread function */
+    /*!
+     * @brief Thread that creates steps based on current_speed
+     * @param none
+     */
     void stepper_thread_function(void);
 
-    /* GPIO configuration */
+    /*!
+     * @brief GPIO configuration
+     * @param gpio_spec: gpio_dt_spec struct
+     * @param gpio_flag: Flags (GPIO_OUTPUT | GPIO_INPUT)
+     */
     void gpio_configure(const struct gpio_dt_spec gpio_spec, gpio_flags_t gpio_flag);
 };
