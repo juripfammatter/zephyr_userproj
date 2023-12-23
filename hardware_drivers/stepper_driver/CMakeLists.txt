@@ -4,15 +4,23 @@ cmake_minimum_required(VERSION 3.20.0)
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(stepper_driver)
 
-# target_sources(app PRIVATE src/main.cpp src/stepper.cpp)
+# Include headers
+target_include_directories(app PRIVATE include)
+
+# shared libraries
+set(COMMON_LIBS 
+    src/stepper.cpp
+)
 
 # can be set by running west build ... -DTESTS=ON
 option(TESTS "Run tests in test/" OFF)
+
 if(TESTS)
-    # build only test_main
-    target_sources(app PRIVATE test/test_main.cpp)
+    # build only test_main and needed libraries
+    target_sources(app PRIVATE test/test_main.cpp ${COMMON_LIBS})
 else()
-    # build only main
-    target_sources(app PRIVATE src/main.cpp src/stepper.cpp)
+    # build only main and needed libraries
+    target_sources(app PRIVATE src/main.cpp ${COMMON_LIBS})
 endif()
+
 unset(TESTS CACHE)

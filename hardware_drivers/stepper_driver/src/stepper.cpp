@@ -35,7 +35,7 @@ Stepper::Stepper(double step_divider) : phi_steps(0),
                                                  this, NULL, NULL,
                                                  STEPPER_THREAD_PRIORITY, 0, K_MSEC(10));
 
-    LOG_MODULE_DECLARE(test);
+    LOG_MODULE_DECLARE(logger);
     LOG_INF("Initialized stepper with step size %.3f° and step divider %0.1f\n", step_size, step_divider);
     LOG_INF("Stepper thread running\n");
 }
