@@ -15,7 +15,8 @@ LOG_MODULE_REGISTER(logger);
 Stepper::Stepper(double step_divider) : phi_steps(0),
                                         step_size(360.0 / (200.0 * step_divider)),
                                         step_divider(step_divider),
-                                        current_speed(0)
+                                        current_speed(0),
+                                        stepper_enabled(false)
 
 {
     // GPIO configuration
