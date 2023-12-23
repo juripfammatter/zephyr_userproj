@@ -28,6 +28,8 @@ ZTEST(stepper_unit_tests, disabled_steps_test)
 	k_sleep(K_MSEC(100));
 
 	stepper.set_velocity(0.0);
+	k_sleep(K_MSEC(100));
+	
 	zassert_true(stepper.get_position() < 0.5,
 				 "\nSteps were generated while stepper was disabled");
 }

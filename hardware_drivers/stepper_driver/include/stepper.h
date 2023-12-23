@@ -44,6 +44,8 @@ private:
     double current_speed; // steps/s
     double max_speed;     // steps/s
 
+    bool stepper_enabled;
+
     /* Threading */
     struct k_thread stepper_thread;
 

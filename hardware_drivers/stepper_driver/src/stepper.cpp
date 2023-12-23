@@ -48,11 +48,13 @@ Stepper::~Stepper(void)
 void Stepper::enable_stepper(void)
 {
     gpio_pin_set_dt(&enable, 1);
+    stepper_enabled = true;
 }
 
 void Stepper::disable_stepper(void)
 {
     gpio_pin_set_dt(&enable, 0);
+    stepper_enabled = false;
 }
 
 void Stepper::set_velocity(double vel)
@@ -81,7 +83,7 @@ void Stepper::stepper_thread_function(void)
     {
         double desired_speed = current_speed;
 
-        if (desired_speed != 0)
+        if (desired_speed != 0 && stepper_enabled)
         {
             if (desired_speed < 0)
             {
