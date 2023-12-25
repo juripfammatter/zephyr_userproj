@@ -10,6 +10,7 @@ target_include_directories(app PRIVATE include)
 # shared libraries
 set(COMMON_LIBS 
     src/stepper.cpp
+    src/controller.cpp
 )
 
 # can be set by running west build ... -DTESTS=ON
