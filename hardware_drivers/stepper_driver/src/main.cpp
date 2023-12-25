@@ -17,13 +17,16 @@ int main(void)
 
 	// // deconstructor will disable Stepper
 
+	Controller controller(4, 5000); // kp, sample time (usec)
 
-	Controller controller(5, 5000); // kp, sample time (usec)
+	// controller.set_velocity(20);
+	// k_sleep(K_MSEC(2000));
 
-	controller.set_velocity(20);
-	k_sleep(K_MSEC(2000));
+	controller.set_reference(200);
+	k_sleep(K_MSEC(1500));
 
 	controller.dump_buffer();
-	k_sleep(K_MSEC(2000));
+	k_sleep(K_MSEC(100));
+
 	return 0;
 }

@@ -16,6 +16,7 @@ Stepper::Stepper(double step_divider) : phi_steps(0),
                                         step_size(360.0 / (200.0 * step_divider)),
                                         step_divider(step_divider),
                                         current_speed(0),
+                                        max_speed(600* step_divider),
                                         stepper_enabled(false)
 
 {
@@ -62,8 +63,8 @@ void Stepper::set_velocity(double vel)
 {
     current_speed = vel * step_divider;
 
-    LOG_MODULE_DECLARE(logger);
-    LOG_INF("Setting speed to %.3f (divider = %.1f)\n", current_speed, step_divider);
+    // LOG_MODULE_DECLARE(logger);
+    // LOG_INF("Setting speed to %.3f (divider = %.1f)\n", current_speed, step_divider);
 }
 
 double Stepper::get_position(void)
@@ -93,6 +94,12 @@ void Stepper::stepper_thread_function(void)
             else
             {
                 gpio_pin_set_dt(&direction, 0);
+            }
+
+            // saturate
+            if (fabs(desired_speed) > max_speed)
+            {
+                desired_speed = max_speed;
             }
 
             // calculate period in usec

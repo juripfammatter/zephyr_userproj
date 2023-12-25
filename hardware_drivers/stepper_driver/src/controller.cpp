@@ -8,6 +8,7 @@ K_THREAD_STACK_DEFINE(control_loop_thread_area, CONTROL_LOOP_STACK_SIZE);
 
 // public
 Controller::Controller(double kp, double sample_time) : reference(0),
+                                                        error(0),
                                                         kp(kp),
                                                         sample_time(sample_time),
                                                         stepper(4)
@@ -56,6 +57,11 @@ void Controller::set_velocity(double vel)
     stepper.set_velocity(vel);
 }
 
+void Controller::set_reference(double ref)
+{
+    reference = ref;
+}
+
 // private
 void Controller::control_loop_thread_entry(void *instance, void *, void *)
 {
@@ -69,9 +75,17 @@ void Controller::control_loop_thread_function(void)
     {
         // wait for base_timer to expire
         // k_timer_status_sync(&control_loop_timer);;
+
+        // measure stepper angle
         double phi_measured = stepper.get_position();
         buffer.pop();
         buffer.emplace(phi_measured);
+
+        // update output
+        error = reference - phi_measured;
+        double gain = kp * error;
+        stepper.set_velocity(gain);
+
         k_sleep(K_USEC(sample_time));
     }
 }
