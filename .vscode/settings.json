@@ -115,6 +115,8 @@
     "typeinfo": "cpp",
     "unordered_map": "cpp",
     "variant": "cpp",
-    "algorithm": "cpp"
+    "algorithm": "cpp",
+    "zephyr.h": "c",
+    "net_mgmt.h": "c"
   }
 }
