@@ -6,7 +6,8 @@
                 "/Users/juri/git/zephyr/zephyr*",
                 "/Users/juri/git/zephyr/zephyr/include",
                 "/Users/juri/git/zephyr/zephyr/build/zephyr/include/generated",
-                "/Users/juri/git/zephyr/zephyr/subsys/testsuite/ztest/include/zephyr"
+                "/Users/juri/git/zephyr/zephyr/subsys/testsuite/ztest/include/zephyr",
+                "/Users/juri/git/zephyr/zephyr/lib/libc/armstdc/include"
             ],
             "compilerPath": "/usr/bin/clang",
             "cStandard": "${default}",
