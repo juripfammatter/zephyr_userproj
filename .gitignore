@@ -1,9 +1,12 @@
 .vscode/*
 !.vscode/c_cpp_properties.json
+
 /datasheets
+
 hardware_drivers/stepper_driver/matlab/
 hardware_drivers/stepper_driver/.DS_Store
 hardware_drivers/stepper_driver/measurements/
+
 networking/wifi_test/credentials.conf
 networking/wifi_test/prj_credentials.conf
 
