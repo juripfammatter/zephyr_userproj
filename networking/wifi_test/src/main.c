@@ -4,10 +4,10 @@
 #include <errno.h>
 #include <zephyr/kernel.h>
 #include <zephyr/net/wifi_mgmt.h>
-#include <zephyr/net/net_if.h>
+// #include <zephyr/net/net_if.h>
 #include <zephyr/net/socket.h>
-#include <zephyr/net/http/client.h>
-#include <autoconf.h>
+// #include <zephyr/net/http/client.h>
+#include <autoconf.h> // final kconfig defines
 
 #define WIFI_SSID CONFIG_WIFI_SSID
 #define WIFI_PASSWORD CONFIG_WIFI_PASSWORD
@@ -20,6 +20,9 @@
                          "Host: " HTTP_HOST ":" HTTP_PORT "\r\n"  \
                          "Connection: close\r\n"                  \
                          "\r\n"
+
+#define MAX_RETRY_TIME_MS 30000 // Maximum time to wait for IP (30 seconds)
+#define RETRY_INTERVAL_MS 2000
 
 // static struct http_client_request req;
 // static struct http_client_response rsp;
@@ -46,6 +49,27 @@ void connect_wifi(void)
     else
     {
         printf("WiFi Connection Request Sent\n");
+    }
+
+    // Wait for IP address
+    int retry_count = 0;
+    while (retry_count * RETRY_INTERVAL_MS < MAX_RETRY_TIME_MS)
+    {
+        struct net_if_ipv4 *ipv4 = iface->config.ip.ipv4;
+        if (ipv4 && ipv4->unicast[0].is_used && ipv4->unicast[0].address.in_addr.s4_addr32[0] != 0)
+        {
+            char ip_str[NET_IPV4_ADDR_LEN];
+            net_addr_ntop(AF_INET, &ipv4->unicast[0].address.in_addr, ip_str, sizeof(ip_str));
+            printf("IP address obtained: %s\n", ip_str);
+            return;
+        }
+        else
+        {
+            printf("Waiting for IP allocation\n");
+        }
+
+        k_msleep(RETRY_INTERVAL_MS);
+        retry_count++;
     }
 }
 
@@ -98,7 +122,7 @@ int send_http_get(float temperature)
     // Format the full request string
     snprintf(request, sizeof(request), REQUEST_TEMPLATE, temp_str);
 
-    printf("Sending request: %s", request);
+    // printf("Sending request: %s", request);
     ret = send(sock, request, sizeof(request), 0);
     if (ret < 0)
     {
@@ -144,12 +168,12 @@ int main(void)
     printf("Trying to connect to %s\n", WIFI_SSID);
 
     connect_wifi();
-    k_msleep(10000);
+    // k_msleep(10000);
 
     while (true)
     {
         send_http_get(42.0);
-        k_msleep(10000);
+        k_msleep(5000);
     }
     return 0;
 }
