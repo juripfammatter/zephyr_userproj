@@ -1,5 +1,4 @@
-#include <stdio.h>
-#include <stdbool.h>    // booleans
+#include <cstdio>
 #include <zephyr/kernel.h>
 #include <autoconf.h>
 #include <vector>
