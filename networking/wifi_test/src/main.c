@@ -23,7 +23,7 @@ char WIFI_PASSWORD[] = CONFIG_WIFI_PASSWORD;
 	"\r\n"
 
 #define MAX_RETRY_TIME_MS 30000 // Maximum time to wait for IP (30 seconds)
-#define RETRY_INTERVAL_MS 2000
+#define RETRY_INTERVAL_MS 5000
 
 // static struct http_client_request req;
 // static struct http_client_response rsp;
@@ -86,7 +86,7 @@ int send_http_get(float temperature)
 
 	printf("Preparing HTTP GET request for http://" HTTP_HOST ":" HTTP_PORT HTTP_PATH "\n");
 
-	sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	sock = zsock_socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (sock < 0) {
 		printf("Failed to create socket: %d\n", sock);
 		return -1;
@@ -96,19 +96,19 @@ int send_http_get(float temperature)
 
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
-	addr.sin_port = htons(atoi(HTTP_PORT));
+	addr.sin_port = htons(strtol(HTTP_PORT, NULL, 10));
 
-	ret = inet_pton(AF_INET, HTTP_HOST, &addr.sin_addr);
+	ret = zsock_inet_pton(AF_INET, HTTP_HOST, &addr.sin_addr);
 	if (ret != 1) {
 		printf("Invalid address: %d\n", ret);
-		close(sock);
+		zsock_close(sock);
 		return -1;
 	}
 
-	ret = connect(sock, (struct sockaddr *)&addr, (socklen_t)sizeof(addr));
+	ret = zsock_connect(sock, (struct sockaddr *)&addr, (socklen_t)sizeof(addr));
 	if (ret < 0) {
 		printf("Failed to connect: %d\n", ret);
-		close(sock);
+		zsock_close(sock);
 		return -1;
 	} else {
 		printf("Connection successful\n");
@@ -121,17 +121,17 @@ int send_http_get(float temperature)
 	snprintf(request, sizeof(request), REQUEST_TEMPLATE, temp_str);
 
 	// printf("Sending request: %s", request);
-	ret = send(sock, request, sizeof(request), 0);
+	ret = zsock_send(sock, request, sizeof(request), 0);
 	if (ret < 0) {
 		printf("Failed to send request: %d\n", ret);
-		close(sock);
+		zsock_close(sock);
 		return -1;
 	}
 
 	printf("Request sent, waiting for response...\n");
 
 	do {
-		ret = recv(sock, buf, sizeof(buf) - 1, 0);
+		ret = zsock_recv(sock, buf, sizeof(buf) - 1, 0);
 		if (ret < 0) {
 			if (errno == EINTR) {
 				// Interrupted system call, try again
@@ -148,7 +148,8 @@ int send_http_get(float temperature)
 		}
 	} while (ret > 0);
 
-	close(sock);
+	printf("closing socket %i\n", sock);
+	zsock_close(sock);
 	return 0;
 }
 
@@ -158,7 +159,7 @@ int main(void)
 	printf("Trying to connect to %s\n", WIFI_SSID);
 
 	int ret = connect_wifi();
-	if(ret != 0){
+	if (ret != 0) {
 		return -1;
 	}
 	// k_msleep(10000);
