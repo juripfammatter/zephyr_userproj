@@ -16,13 +16,13 @@ char WIFI_PASSWORD[] = CONFIG_WIFI_PASSWORD;
 #define HTTP_PATH "/esp_data"
 
 #define REQUEST_TEMPLATE                                                                           \
-	"GET " HTTP_PATH "?temp=%s HTTP/1.1\r\n"                                                   \
+	"GET " HTTP_PATH "?temp=%s&pres=%s&hum=%s&gas=%s HTTP/1.1\r\n"                             \
 	"Host: " HTTP_HOST ":" HTTP_PORT "\r\n"                                                    \
 	"Connection: close\r\n"                                                                    \
 	"\r\n"
 
-#define MAX_RETRY_TIME_MS 30000 // Maximum time to wait for IP (30 seconds)
-#define RETRY_INTERVAL_MS 5000
+#define MAX_RETRY_TIME_MS     30000 // Maximum time to wait for IP (30 seconds)
+#define RETRY_INTERVAL_MS     5000
 #define HTTP_SEND_INTERVAL_MS 30000
 
 // static struct http_client_request req;
@@ -83,13 +83,13 @@ int connect_wifi(void)
 	return -1;
 }
 
-int send_http_get(double temperature)
+int send_http_get(double temperature, double pressure, double humidity, double gas_res)
 {
 	int sock, ret;
 	struct sockaddr_in addr;
 	char buf[4096];
 	char request[256];
-	char temp_str[10];
+	char temp_str[10], pres_str[10], hum_str[10], gas_str[10];
 
 	printf("Preparing HTTP GET request for http://" HTTP_HOST ":" HTTP_PORT HTTP_PATH "\n");
 
@@ -123,9 +123,12 @@ int send_http_get(double temperature)
 
 	// Convert float to string
 	snprintf(temp_str, sizeof(temp_str), "%.4f", temperature);
+	snprintf(pres_str, sizeof(pres_str), "%.4f", pressure);
+	snprintf(hum_str, sizeof(hum_str), "%.4f", humidity);
+	snprintf(gas_str, sizeof(gas_str), "%.4f", gas_res);
 
 	// Format the full request string
-	snprintf(request, sizeof(request), REQUEST_TEMPLATE, temp_str);
+	snprintf(request, sizeof(request), REQUEST_TEMPLATE, temp_str, pres_str, hum_str, gas_str);
 
 	// printf("Sending request: %s", request);
 	ret = zsock_send(sock, request, sizeof(request), 0);
@@ -210,7 +213,10 @@ int main(void)
 
 	while (true) {
 		bme680_get_measurements(dev, &measurements);
-		send_http_get(sensor_value_to_double(&measurements.temp));
+		send_http_get(sensor_value_to_double(&measurements.temp),
+			      sensor_value_to_double(&measurements.pressure),
+			      sensor_value_to_double(&measurements.humidity),
+			      sensor_value_to_double(&measurements.gas_res));
 		k_msleep(HTTP_SEND_INTERVAL_MS);
 	}
 	return 0;
