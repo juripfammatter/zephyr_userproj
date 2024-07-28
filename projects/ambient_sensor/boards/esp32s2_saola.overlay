@@ -1,0 +1,19 @@
+&wifi {
+	status = "okay";
+};
+
+&i2c0 {
+	bme680@77 {
+		compatible = "bosch,bme680";
+		reg = <0x77>;
+		status = "okay";
+	};
+};
+
+&pinctrl {
+	i2c0_default: i2c0_default {
+		group1 {
+			pinmux = <I2C0_SDA_GPIO10>, <I2C0_SCL_GPIO11>;
+		};
+	};
+};

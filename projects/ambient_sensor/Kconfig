@@ -1,0 +1,11 @@
+mainmenu "Networking http-client sample application"
+
+config WIFI_SSID
+	string "SSID"
+	default ""
+
+config WIFI_PASSWORD
+	string "password"
+	default ""
+
+source "Kconfig.zephyr"

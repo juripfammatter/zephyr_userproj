@@ -7,9 +7,10 @@ hardware_drivers/stepper_driver/matlab/
 hardware_drivers/stepper_driver/.DS_Store
 hardware_drivers/stepper_driver/measurements/
 
-networking/wifi_test/credentials.conf
-networking/wifi_test/prj_credentials.conf
+credentials.conf
+prj_credentials.conf
 
 # Clion
 .idea
 cmake-build-debug-zephyr/
+build
