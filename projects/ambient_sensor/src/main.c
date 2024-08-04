@@ -11,7 +11,7 @@
 char WIFI_SSID[] = CONFIG_WIFI_SSID;
 char WIFI_PASSWORD[] = CONFIG_WIFI_PASSWORD;
 
-#define HTTP_HOST "192.168.1.120"
+#define HTTP_HOST "192.168.1.139" //"192.168.1.120"  "192.168.1.139" : raspberry pi
 #define HTTP_PORT "1880"
 #define HTTP_PATH "/esp_data"
 
@@ -23,7 +23,7 @@ char WIFI_PASSWORD[] = CONFIG_WIFI_PASSWORD;
 
 #define MAX_RETRY_TIME_MS     30000 // Maximum time to wait for IP (30 seconds)
 #define RETRY_INTERVAL_MS     5000
-#define HTTP_SEND_INTERVAL_MS 30000
+#define HTTP_SEND_INTERVAL_MS 60000
 
 // static struct http_client_request req;
 // static struct http_client_response rsp;
