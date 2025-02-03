@@ -1,0 +1,86 @@
+---
+- name: install zephyr
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install dependencies
+      ansible.builtin.apt:
+        name: 
+        - git
+        - cmake
+        - ninja-build
+        - gperf 
+        - ccache
+        - dfu-util
+        - device-tree-compiler
+        - wget
+        - python3-dev
+        - python3-pip
+        - python3-setuptools
+        - python3-tk
+        - python3-wheel
+        - python3-venv
+        - xz-utils
+        - file
+        - make
+        - gcc
+        - gcc-multilib
+        - g++-multilib
+        - libsdl2-dev
+        - libmagic1
+        state: present
+        update_cache: yes
+
+    - name: check versions
+      ansible.builtin.shell:
+        cmake --version && python3 --version && dtc --version
+      register: result
+
+    - name: print versions
+      ansible.builtin.debug:
+        var: result
+        verbosity: 1
+    - block:
+      - name: Create zephyr directory
+        ansible.builtin.file:
+          path: "$HOME/zephyrproject/.venv"
+          state: directory
+          mode: '0777'
+      
+      - name: install west
+        ansible.builtin.shell: |
+          python3 -m venv $HOME/zephyrproject/.venv
+          source $HOME/zephyrproject/.venv/bin/activate
+          pip install west
+        args:
+          executable: /bin/bash
+
+      - name: install zephyr
+        ansible.builtin.shell: |
+          source $HOME/zephyrproject/.venv/bin/activate
+          west init $HOME/zephyrproject
+          cd $HOME/zephyrproject
+          west update
+          west zephyr-export
+          west packages pip --install
+        args:
+          executable: /bin/bash
+
+      - name: install zephyr sdk
+        ansible.builtin.shell: |
+          source $HOME/zephyrproject/.venv/bin/activate
+          cd ~/zephyrproject/zephyr
+          west sdk install
+        args:
+          executable: /bin/bash
+
+      - name: install esp blobs
+        ansible.builtin.shell: |
+          source $HOME/zephyrproject/.venv/bin/activate
+          cd ~/zephyrproject/zephyr
+          west blobs fetch hal_espressif
+        args:
+          executable: /bin/bash
+
+      become_user: "{{ ansible_user}}"
+      become: yes
