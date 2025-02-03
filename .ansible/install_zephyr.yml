@@ -40,6 +40,7 @@
       ansible.builtin.debug:
         var: result
         verbosity: 1
+
     - block:
       - name: Create zephyr directory
         ansible.builtin.file:
@@ -84,3 +85,19 @@
 
       become_user: "{{ ansible_user}}"
       become: yes
+
+    # TODO: don't hard code zephyr sdk folder
+    - name: copy udev rules file
+      copy:
+        src: "/home/{{ ansible_user}}/zephyr-sdk-0.17.0/sysroots/x86_64-pokysdk-linux/usr/share/openocd/contrib/60-openocd.rules"
+        dest: /etc/udev/rules.d/
+        owner: root
+        group: root
+        mode: '0644'
+        remote_src: true
+
+    - name: update udev rules
+      ansible.builtin.shell: |
+        udevadm control --reload
+      args:
+        executable: /bin/bash
