@@ -1,5 +1,16 @@
-.vscode/
+.vscode/*
+!.vscode/c_cpp_properties.json
+
 /datasheets
+
 hardware_drivers/stepper_driver/matlab/
 hardware_drivers/stepper_driver/.DS_Store
 hardware_drivers/stepper_driver/measurements/
+
+credentials.conf
+prj_credentials.conf
+
+# Clion
+.idea
+cmake-build-debug-zephyr/
+build

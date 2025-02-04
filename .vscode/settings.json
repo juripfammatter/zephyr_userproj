@@ -115,6 +115,14 @@
     "typeinfo": "cpp",
     "unordered_map": "cpp",
     "variant": "cpp",
-    "algorithm": "cpp"
+    "algorithm": "cpp",
+    "zephyr.h": "c",
+    "net_mgmt.h": "c",
+    "net_if.h": "c",
+    "client.h": "c",
+    "string.h": "c",
+    "errno.h": "c",
+    "wifi_mgmt.h": "c",
+    "socket.h": "c"
   }
 }
