@@ -1,19 +1,21 @@
 {
     "configurations": [
         {
+            "name": "Zephyr",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/Users/juri/git/zephyr/zephyr*",
-                "/Users/juri/git/zephyr/zephyr/include",
+                "/Users/juri/git/zephyr/zephyr/include/**",
                 "/Users/juri/git/zephyr/zephyr/build/zephyr/include/generated",
-                "/Users/juri/git/zephyr/zephyr/subsys/testsuite/ztest/include/zephyr"
+                "/Users/juri/git/zephyr/zephyr/subsys/testsuite/ztest/include/zephyr",
+                "/Users/juri/git/zephyr/zephyr/lib/**",
+                "/Users/juri/zephyr-sdk-0.16.3/xtensa-espressif_esp32s2_zephyr-elf/xtensa-espressif_esp32s2_zephyr-elf/include"
             ],
-            "compilerPath": "/usr/bin/clang",
+            "compilerPath": "/Users/juri/zephyr-sdk-0.16.3/xtensa-espressif_esp32s2_zephyr-elf/bin/xtensa-espressif_esp32s2_zephyr-elf-gcc",
             "cStandard": "${default}",
             "cppStandard": "${default}",
             "intelliSenseMode": "macos-clang-arm64",
             "compilerArgs": [
-                ""
+                "-b esp32s2_saola"
             ]
         }
     ],
