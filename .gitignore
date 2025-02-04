@@ -12,5 +12,5 @@ prj_credentials.conf
 
 # Clion
 .idea
-cmake-build-debug-zephyr/
+cmake-build-debug*
 build
