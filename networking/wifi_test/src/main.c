@@ -12,9 +12,9 @@
 char WIFI_SSID[] = CONFIG_WIFI_SSID;
 char WIFI_PASSWORD[] = CONFIG_WIFI_PASSWORD;
 
-#define HTTP_HOST "192.168.1.120"
+#define HTTP_HOST "192.168.1.139"
 #define HTTP_PORT "1880"
-#define HTTP_PATH "/esp_data"
+#define HTTP_PATH "/esp_test_data"
 
 #define REQUEST_TEMPLATE                                                                           \
 	"GET " HTTP_PATH "?temp=%s HTTP/1.1\r\n"                                                   \
@@ -76,9 +76,8 @@ int connect_wifi(void)
 	return -1;
 }
 
-int send_http_get(float temperature)
+int send_http_get(const float temperature)
 {
-	int sock, ret;
 	struct sockaddr_in addr;
 	char buf[4096];
 	char request[256];
@@ -86,7 +85,7 @@ int send_http_get(float temperature)
 
 	printf("Preparing HTTP GET request for http://" HTTP_HOST ":" HTTP_PORT HTTP_PATH "\n");
 
-	sock = zsock_socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	const int sock = zsock_socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (sock < 0) {
 		printf("Failed to create socket: %d\n", sock);
 		return -1;
@@ -98,7 +97,7 @@ int send_http_get(float temperature)
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(strtol(HTTP_PORT, NULL, 10));
 
-	ret = zsock_inet_pton(AF_INET, HTTP_HOST, &addr.sin_addr);
+	int ret = zsock_inet_pton(AF_INET, HTTP_HOST, &addr.sin_addr);
 	if (ret != 1) {
 		printf("Invalid address: %d\n", ret);
 		zsock_close(sock);
@@ -106,13 +105,13 @@ int send_http_get(float temperature)
 	}
 
 	ret = zsock_connect(sock, (struct sockaddr *)&addr, (socklen_t)sizeof(addr));
+	printf("ret=%d\n", ret);
 	if (ret < 0) {
 		printf("Failed to connect: %d\n", ret);
 		zsock_close(sock);
 		return -1;
-	} else {
-		printf("Connection successful\n");
 	}
+	printf("Connection successful\n");
 
 	// Convert float to string
 	snprintf(temp_str, sizeof(temp_str), "%.2f", (double)temperature);
@@ -158,7 +157,7 @@ int main(void)
 	printf("WiFi Connection Test\n");
 	printf("Trying to connect to %s\n", WIFI_SSID);
 
-	int ret = connect_wifi();
+	const int ret = connect_wifi();
 	if (ret != 0) {
 		return -1;
 	}

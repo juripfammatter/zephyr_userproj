@@ -11,9 +11,9 @@
 char WIFI_SSID[] = CONFIG_WIFI_SSID;
 char WIFI_PASSWORD[] = CONFIG_WIFI_PASSWORD;
 
-#define HTTP_HOST "192.168.1.139" //"192.168.1.120"  "192.168.1.139" : raspberry pi
+#define HTTP_HOST "192.168.1.139" //"192.168.1.120" : raspberry pi
 #define HTTP_PORT "1880"
-#define HTTP_PATH "/esp_data"
+#define HTTP_PATH "/esp_ambient_data"
 
 #define REQUEST_TEMPLATE                                                                           \
 	"GET " HTTP_PATH "?temp=%s&pres=%s&hum=%s&gas=%s HTTP/1.1\r\n"                             \
